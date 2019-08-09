@@ -2,6 +2,7 @@ import requests
 import datetime
 import csv
 import os
+import config
 import errno
 import argparse
 import getpass
@@ -9,8 +10,8 @@ import keyring
 
 
 billNow = '1'
-loginId = 'loginK'
-password = 'Konnektive2017'
+loginId = config.loginId
+password = config.password
 inputFilename = "update purchase.csv"
 inputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\"
 outputFilename = "billNow " + datetime.date.today().strftime("%d.%m.%Y") + ".csv"
