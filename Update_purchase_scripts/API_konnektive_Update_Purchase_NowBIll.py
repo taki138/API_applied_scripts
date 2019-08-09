@@ -3,10 +3,7 @@ import datetime
 import csv
 import os
 import config
-import errno
-import argparse
-import getpass
-import keyring
+
 
 
 billNow = '1'

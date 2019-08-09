@@ -1,3 +1,4 @@
+import json
 import requests
 import config
 from requests import HTTPError
@@ -101,7 +102,9 @@ def konnektiveTransactionsQuery():
 
     try:
         responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
-        parseResponseUrl = responseUrl.json()
+        parseResponseUrlJSON = responseUrl.json()
+        parseResponseUrlString = json.dumps(parseResponseUrlJSON, indent=4)
+        parseResponseUrlDict = json.loads(responseUrl.text)
         responseUrl.raise_for_status()
     except HTTPError as http_err:
         print(f'HTTP error occurred: {http_err}')
@@ -113,11 +116,13 @@ def konnektiveTransactionsQuery():
         print(f'Timeout error occurred: {timeout_err}')
         return f'Timeout error occurred: {timeout_err}'
     else:
-        return parseResponseUrl
+        return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+    # print(konnektiveTransactionsQuery()[0]['message']['data'][1])
 
 
-ResponseJSON = konnektiveTransactionsQuery()
-if ResponseJSON['result'] == 'SUCCESS':
-    print(ResponseJSON['message']['totalResults'])
-elif ResponseJSON['result'] == 'ERROR':
-    print(ResponseJSON['result'], ResponseJSON['message'])
+print(konnektiveTransactionsQuery()[0]['message']['data'][1])
+# ResponseJSON = konnektiveTransactionsQuery()
+# if ResponseJSON['result'] == 'SUCCESS':
+#     print(ResponseJSON['message']['totalResults'])
+# elif ResponseJSON['result'] == 'ERROR':
+#     print(ResponseJSON['result'], ResponseJSON['message'])
