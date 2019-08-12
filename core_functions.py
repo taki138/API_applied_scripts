@@ -28,21 +28,24 @@ def csv_result_writer(outputFilename, outputFilePath, writedWalues):
 	print(writedWalues)
 	file.close()
 
-
 def reader_csv_to_dictionary(inputFilePath, inputFilename):
 	with open(inputFilePath + inputFilename, mode='r') as csv_file:
-		csv_reader = csv.DictReader(csv_file)
-		line_count = 0
-		for row in csv_reader:
-			if line_count == 0:
-				print(f'reader_csv_to_dictionary: Column names are {", ".join(row)}')
-				line_count += 1
-			line_count += 1
-		print(f'reader_csv_to_dictionary: processed {line_count} lines.')
-		return csv_reader
-	file.close()
+		input_file = csv.DictReader(csv_file, delimiter=';')
+		headers = input_file.fieldnames
+		result = {}
+		for row in map(dict, input_file):
+			# print(row)
+			print(f"{row['fam_wilen@hotmail.com']}")
 
+		# 	for column, value in row.iteritems():
+		# 		result.setdefault(column, []).append(value)
+		# 		print(f'reader_csv_to_dictionary: Column names are {", ".join(row)}')
+		# 		line_count += 1
+		# 	line_count += 1
+		# print(f'reader_csv_to_dictionary: processed {line_count} lines.')
+		return csv_file
 
+# TODO: допилить импорт CSV в словарь
 # def writer_dictonary_to_csv(outputFilePath, outputFilename, csv_reader):
 # 	pass
 
@@ -68,10 +71,7 @@ def check_directory_existence(filePath):
 
 outputFilename = "billNow test1" + ".csv"
 outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
-# inputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
-# inputFilename = 'billNow 06.08.2019.csv'
-# csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
-# tmp = reader_csv_to_dictionary(inputFilePath, inputFilename)
+inputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
+inputFilename = 'billNow 06.08.2019.csv'
 
-
-print(send_file_by_bot(outputFilePath, outputFilename)[1])
+reader_csv_to_dictionary(inputFilePath, inputFilename)
