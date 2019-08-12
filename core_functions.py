@@ -47,12 +47,13 @@ def reader_csv_to_dictionary(inputFilePath, inputFilename):
 # 	pass
 
 
-
 # list functions to work with Telegram Bot
 def send_file_by_bot(outputFilePath, outputFilename):
+	# TODO: допилить перевод даты из таймстамп в норм формат
 	bot = telebot.TeleBot(config.telegramBotToken)
 	doc = open(outputFilePath + outputFilename, 'rb')
-	send = bot.send_document(config.chat_id, doc, disable_notification=True)
+	send = bot.send_document(config.group_chat_id, doc, disable_notification=True)
+	objectMessage = send.date
 	print(f'Filename: {outputFilename} sended to Telegram')
 	return send
 
@@ -65,10 +66,12 @@ def check_directory_existence(filePath):
 		return f'Other error occurred: {err}'
 
 
-# outputFilename = "billNow test1" + ".csv"
-# outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
+outputFilename = "billNow test1" + ".csv"
+outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
 # inputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
 # inputFilename = 'billNow 06.08.2019.csv'
 # csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
 # tmp = reader_csv_to_dictionary(inputFilePath, inputFilename)
 
+
+print(send_file_by_bot(outputFilePath, outputFilename)[1])
