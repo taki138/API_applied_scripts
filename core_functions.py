@@ -20,6 +20,15 @@ def csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter):
 	file.close()
 
 
+def reader_csv_to_list(inputFilePath, inputFilename):
+	with open(inputFilePath + inputFilename, 'r') as f:
+		csv_reader = csv.csv_reader(f, delimiter=';')
+		output_list = list(csv_reader)
+		print(output_list)
+		f.close()
+		return output_list
+
+
 def csv_result_writer(outputFilename, outputFilePath, writedWalues):
 	with open(outputFilePath + outputFilename, "a", newline="") as file:
 		stringWriter = writedWalues
@@ -28,24 +37,26 @@ def csv_result_writer(outputFilename, outputFilePath, writedWalues):
 	print(writedWalues)
 	file.close()
 
-def reader_csv_to_dictionary(inputFilePath, inputFilename):
-	with open(inputFilePath + inputFilename, mode='r') as csv_file:
-		input_file = csv.DictReader(csv_file, delimiter=';')
-		headers = input_file.fieldnames
-		result = {}
-		for row in map(dict, input_file):
-			# print(row)
-			print(f"{row['fam_wilen@hotmail.com']}")
-
-		# 	for column, value in row.iteritems():
-		# 		result.setdefault(column, []).append(value)
-		# 		print(f'reader_csv_to_dictionary: Column names are {", ".join(row)}')
-		# 		line_count += 1
-		# 	line_count += 1
-		# print(f'reader_csv_to_dictionary: processed {line_count} lines.')
-		return csv_file
 
 # TODO: допилить импорт CSV в словарь
+# def reader_csv_to_dictionary(inputFilePath, inputFilename):
+# 	with open(inputFilePath + inputFilename, mode='r') as csv_file:
+# 		input_file = csv.DictReader(csv_file, delimiter=';')
+# 		headers = input_file.fieldnames
+# 		result = {}
+# 		for row in map(dict, input_file):
+# 			# print(row)
+# 			print(f"{row['fam_wilen@hotmail.com']}")
+#
+# 		# 	for column, value in row.iteritems():
+# 		# 		result.setdefault(column, []).append(value)
+# 		# 		print(f'reader_csv_to_dictionary: Column names are {", ".join(row)}')
+# 		# 		line_count += 1
+# 		# 	line_count += 1
+# 		# print(f'reader_csv_to_dictionary: processed {line_count} lines.')
+# 		return csv_file
+
+
 # def writer_dictonary_to_csv(outputFilePath, outputFilename, csv_reader):
 # 	pass
 
@@ -74,4 +85,4 @@ outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow R
 inputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\BillNow Results\\"
 inputFilename = 'billNow 06.08.2019.csv'
 
-reader_csv_to_dictionary(inputFilePath, inputFilename)
+reader_csv_to_list(inputFilePath, inputFilename)
