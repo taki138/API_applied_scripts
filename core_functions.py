@@ -22,7 +22,7 @@ def csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter):
 
 def reader_csv_to_list(inputFilePath, inputFilename):
 	with open(inputFilePath + inputFilename, 'r') as f:
-		csv_reader = csv.csv_reader(f, delimiter=';')
+		csv_reader = csv.reader(f, delimiter=';')
 		output_list = list(csv_reader)
 		print(output_list)
 		f.close()
