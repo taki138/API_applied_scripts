@@ -14,42 +14,32 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 BinList = [
-    '450060',
-    '451014',
-    '451015',
-    '451401',
-    '451407',
-    '452001',
-    '452002',
-    '452005',
-    '452088',
-    '453081',
-    '453091',
-    '453092',
-    '453600',
-    '453733',
-    '453734',
-    '453737',
-    '454033',
-    '472409',
-    '450060',
-    '451014',
-    '451015',
-    '451401',
-    '451407',
-    '452001',
-    '452002',
-    '452005',
-    '452088',
-    '453081',
-    '453091',
-    '453092',
-    '453600',
-    '453733',
-    '453734',
-    '453737',
-    '454033',
-    '472409',
+	'450060',
+	'451014',
+	'451015',
+	'451401',
+	'451407',
+	'452001',
+	'452002',
+	'452005',
+	'452088',
+	'453081',
+	'453091',
+	'453092',
+	'453600',
+	'453733',
+	'453734',
+	'453737',
+	'454033',
+	'472409',
+	'518127',
+	'519123',
+	'523465',
+	'525892',
+	'541590',
+	'543440',
+	'544612',
+	'551029',
 ]
 
 # __________________________________________________
@@ -64,7 +54,7 @@ def wait_until_element_visible(position_id, position_value):
 browser = Firefox(options=opts)
 browser.maximize_window()
 WebDriverWait(browser, 60).until(EC.visibility_of_all_elements_located)
-browser.get('https://crm.konnektive.com/')
+browser.get(config.konnektiveAdminPannelURL)
 browser.find_element_by_name('userName').send_keys(config.seleniumUserName)
 browser.find_element_by_name('password').send_keys(config.seleniumPassword)
 browser.find_element_by_tag_name('button').submit()

@@ -9,31 +9,34 @@ import config
 import telebot
 
 cardBinList = [
-    '450060',
-    '451014',
-    '451015',
-    '451401',
-    '451407',
-    '452001',
-    '452002',
-    '452005',
-    '452088',
-    '453081',
-    '453091',
-    '453092',
-    '453600',
-    '453733',
-    '453734',
-    '453737',
-    '454033',
-    '472409',
+	'450060',
+	'451014',
+	'451015',
+	'451401',
+	'451407',
+	'452001',
+	'452002',
+	'452005',
+	'452088',
+	'453081',
+	'453091',
+	'453092',
+	'453600',
+	'453733',
+	'453734',
+	'453737',
+	'454033',
+	'472409',
 ]
 
 # _______________________________________________________________________________
 inputFilePath = "C:\\Users\GuestUser\\Documents\\NodeProjects\\konnektive-api-caller\\csv\\result\\"
-inputFilename = '.csv'
-outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\"
+inputFilename = '20190812_131703_success' + '.csv'
+outputFilePath = "C:\\Users\\GuestUser\\Desktop\\AF decline cascading\\csv_value_separation\\"
+core_functions.check_directory_existence(outputFilePath)
 outputFilename = "CSV selected values VISA CA " + datetime.date.today().strftime("%d.%m.%Y") + ".csv"
+
+
 def CSVresultWriter():
     with open(outputFilePath + outputFilename, "a", newline="") as file:
         stringWriter = customerId, customerEmail, cardBin
@@ -52,6 +55,6 @@ with open(inputFilePath + inputFilename, "r", encoding="latin-1") as f:
         if cardBinListCross:
             CSVresultWriter()
 
-sendFileObject = core_functions.send_file(outputFilePath, outputFilename)
+sendFileObject = core_functions.send_file_by_bot(outputFilePath, outputFilename)
 
 print(sendFileObject.date)

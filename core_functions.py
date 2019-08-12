@@ -75,7 +75,7 @@ def send_file_by_bot(outputFilePath, outputFilename):
 	print(f'Filename: {outputFilename} sended to Telegram')
 	return send
 
-
+# функция проверяет существование директорий по указанному пути, если директорий нет, они создаются
 def check_directory_existence(filePath):
 	try:
 		os.makedirs(filePath)
