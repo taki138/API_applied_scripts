@@ -225,45 +225,68 @@ def konnektiveTransactionsQuery():
 # Selenium webbrowser scripts
 # TODO: вынести параметры set_preference как аргумент в формате списка
 def browser_init():
-	fp = webdriver.FirefoxProfile()
-	fp.set_preference("browser.download.dir", r"C:\\Users\\GuestUser\\Downloads\\ChO ChB")
-	fp.set_preference("browser.download.folderList", 2)
-	fp.set_preference("browser.download.manager.showWhenStarting", False)
-	fp.set_preference("browser.helperApps.alwaysAsk.force", False)
-	fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
-	fp.set_preference("browser.helperApps.neverAsk.saveToDisk",
-	                  "application/msword, application/csv, application/ris, text/csv, text/css, image/png, application/pdf,"
-	                  "text/html, text/plain, application/zip, application/x-zip, application/x-zip-compressed,"
-	                  "application/download, application/octet-stream, application/csvm+json, 	text/csv-schema, application/vnd.ms-excel,"
-	                  "application/vnd.ms-excel.addin.macroEnabled.12, application/vnd.ms-excel.sheet.binary.macroEnabled.12,"
-	                  "application/vnd.ms-excel.sheet.macroEnabled.12, 	application/vnd.ms-excel.template.macroEnabled.12, text/csv-schema,"
-	                  "application/x-download; =")
-	fp.set_preference("browser.download.manager.focusWhenStarting", False)
-	fp.set_preference("browser.download.useDownloadDir", True)
-	fp.set_preference("browser.helperApps.alwaysAsk.force", False)
-	fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
-	fp.set_preference("browser.download.manager.closeWhenDone", True)
-	fp.set_preference("browser.download.manager.showAlertOnComplete", False)
-	fp.set_preference("browser.download.manager.useWindow", False)
-	fp.set_preference("services.sync.prefs.sync.browser.download.manager.showWhenStarting", False)
-	fp.set_preference("browser.download.panel.shown", False)
-	fp.set_preference("javascript.enabled", False)
+	this_function_name = sys._getframe(  ).f_code.co_name
+	try:
+		fp = webdriver.FirefoxProfile()
+		fp.set_preference("browser.download.dir", r"C:\\Users\\GuestUser\\Downloads\\ChO ChB")
+		fp.set_preference("browser.download.folderList", 2)
+		fp.set_preference("browser.download.manager.showWhenStarting", False)
+		fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+		fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
+		fp.set_preference("browser.helperApps.neverAsk.saveToDisk",
+		                  "application/msword, application/csv, application/ris, text/csv, text/css, image/png, application/pdf,"
+		                  "text/html, text/plain, application/zip, application/x-zip, application/x-zip-compressed,"
+		                  "application/download, application/octet-stream, application/csvm+json, 	text/csv-schema, application/vnd.ms-excel,"
+		                  "application/vnd.ms-excel.addin.macroEnabled.12, application/vnd.ms-excel.sheet.binary.macroEnabled.12,"
+		                  "application/vnd.ms-excel.sheet.macroEnabled.12, 	application/vnd.ms-excel.template.macroEnabled.12, text/csv-schema,"
+		                  "application/x-download; =")
+		fp.set_preference("browser.download.manager.focusWhenStarting", False)
+		fp.set_preference("browser.download.useDownloadDir", True)
+		fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+		fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
+		fp.set_preference("browser.download.manager.closeWhenDone", True)
+		fp.set_preference("browser.download.manager.showAlertOnComplete", False)
+		fp.set_preference("browser.download.manager.useWindow", False)
+		fp.set_preference("services.sync.prefs.sync.browser.download.manager.showWhenStarting", False)
+		fp.set_preference("browser.download.panel.shown", False)
+		fp.set_preference("javascript.enabled", False)
+	except Exception as err:
+		print(f'Function {this_function_name} error occurred: {err}')
+	else:
+		print(f'Function {this_function_name} fulfilled')
 	return fp
 
 
-def browser_open():
-	opts = Options()
-	opts.set_headless()
-	assert opts.headless
-	browser = Firefox(browser_init(), options=opts)
-	browser.maximize_window()
-	return browser
+def browser_open(fp):
+	this_function_name = sys._getframe(  ).f_code.co_name
+	try:
+		opts = Options()
+		opts.set_headless()
+		assert opts.headless
+		browser = Firefox(fp, options=opts)
+		browser.maximize_window()
+	except Exception as err:
+		print(f'Function {this_function_name} error occurred: {err}')
+		print('Function' + this_function_name + 'error occurred')
+		return f'Function {this_function_name} error occurred: {err}'
+	else:
+		print(f'Function {this_function_name} fulfilled')
+		return browser
 
 
 def login_Konnektive(browser, login, password):
-	WebDriverWait(browser, 60).until(EC.visibility_of_all_elements_located)
-	browser.get(config.konnektiveAdminPannelURL)
-	browser.find_element_by_name('userName').send_keys(login)
-	browser.find_element_by_name('password').send_keys(password)
-	browser.find_element_by_tag_name('button').submit()
-	sleep(6)
+	this_function_name = sys._getframe(  ).f_code.co_name #позволяет получить имя функции внутри самой функции
+	try:
+		WebDriverWait(browser, 60).until(EC.visibility_of_all_elements_located)
+		browser.get(config.konnektiveAdminPannelURL)
+		browser.find_element_by_name('userName').send_keys(login)
+		browser.find_element_by_name('password').send_keys(password)
+		browser.find_element_by_tag_name('button').submit()
+		sleep(6)
+	except Exception as err:
+		print(f'Function {this_function_name} error occurred: {err}')
+		return f'Function {this_function_name} error occurred: {err}'
+	else:
+		print(f'Function {this_function_name} fulfilled')
+	browser.close()
+	return browser
