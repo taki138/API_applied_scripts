@@ -7,6 +7,20 @@ import json
 from requests import HTTPError
 from requests.exceptions import Timeout
 from requests.adapters import HTTPAdapter
+from time import sleep
+import config
+import logging
+import csv
+from gevent import timeout
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver import Firefox, ActionChains
+from selenium.webdriver.firefox.options import Options
+import sys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 csvFirstLineWriter = [
 	'costumerEmail', 'customerPhone', 'merchantId', 'purchaseId', 'cardBin',
@@ -74,6 +88,7 @@ def send_file_by_bot(outputFilePath, outputFilename):
 	objectMessage = send.date
 	print(f'Filename: {outputFilename} sended to Telegram')
 	return send
+
 
 # функция проверяет существование директорий по указанному пути, если директорий нет, они создаются
 def check_directory_existence(filePath):
@@ -205,3 +220,50 @@ def konnektiveTransactionsQuery():
 		return f'Timeout error occurred: {timeout_err}'
 	else:
 		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+
+
+# Selenium webbrowser scripts
+# TODO: вынести параметры set_preference как аргумент в формате списка
+def browser_init():
+	fp = webdriver.FirefoxProfile()
+	fp.set_preference("browser.download.dir", r"C:\\Users\\GuestUser\\Downloads\\ChO ChB")
+	fp.set_preference("browser.download.folderList", 2)
+	fp.set_preference("browser.download.manager.showWhenStarting", False)
+	fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+	fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
+	fp.set_preference("browser.helperApps.neverAsk.saveToDisk",
+	                  "application/msword, application/csv, application/ris, text/csv, text/css, image/png, application/pdf,"
+	                  "text/html, text/plain, application/zip, application/x-zip, application/x-zip-compressed,"
+	                  "application/download, application/octet-stream, application/csvm+json, 	text/csv-schema, application/vnd.ms-excel,"
+	                  "application/vnd.ms-excel.addin.macroEnabled.12, application/vnd.ms-excel.sheet.binary.macroEnabled.12,"
+	                  "application/vnd.ms-excel.sheet.macroEnabled.12, 	application/vnd.ms-excel.template.macroEnabled.12, text/csv-schema,"
+	                  "application/x-download; =")
+	fp.set_preference("browser.download.manager.focusWhenStarting", False)
+	fp.set_preference("browser.download.useDownloadDir", True)
+	fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+	fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
+	fp.set_preference("browser.download.manager.closeWhenDone", True)
+	fp.set_preference("browser.download.manager.showAlertOnComplete", False)
+	fp.set_preference("browser.download.manager.useWindow", False)
+	fp.set_preference("services.sync.prefs.sync.browser.download.manager.showWhenStarting", False)
+	fp.set_preference("browser.download.panel.shown", False)
+	fp.set_preference("javascript.enabled", False)
+	return fp
+
+
+def browser_open():
+	opts = Options()
+	opts.set_headless()
+	assert opts.headless
+	browser = Firefox(browser_init(), options=opts)
+	browser.maximize_window()
+	return browser
+
+
+def login_Konnektive(browser, login, password):
+	WebDriverWait(browser, 60).until(EC.visibility_of_all_elements_located)
+	browser.get(config.konnektiveAdminPannelURL)
+	browser.find_element_by_name('userName').send_keys(login)
+	browser.find_element_by_name('password').send_keys(password)
+	browser.find_element_by_tag_name('button').submit()
+	sleep(6)
