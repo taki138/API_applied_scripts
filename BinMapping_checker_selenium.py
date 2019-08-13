@@ -57,16 +57,7 @@ import core_functions
 #     sleep(30)
 
 
-# browser.close()
-# conn_info=core_functions.vertica_DB_connector(config.vertica_DB_host,
-#                      config.vertica_DB_port,
-#                      config.vertica_DB_login,
-#                      config.vertica_DB_password,
-#                      config.vertica_DB_dbname,
-#                      unicode_error='strict',
-#                      ssl=False,
-#                      use_prepared_statements=False,
-#                      connection_timeout='5')
+
 
 conn_info = {
 	'host': config.vertica_DB_host,
