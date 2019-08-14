@@ -80,9 +80,11 @@ conn_info = {
 	# connection timeout is not enabled by default
 	'connection_timeout': 3
 	}
+
 resultSQLList = []
 nextBillDate = core_functions.tomorrow_date()
 start = timer()
+
 try:
 	with vertica_python.connect(**conn_info) as connection:
 		cur = connection.cursor()
@@ -102,9 +104,29 @@ except socket.error as socketerror:
 except socket.timeout:
 	print("NO RESPONSE")
 except errors.ConnectionError as err:
-	print(f'error occurred: {err}')
+	print(f'Error occurred: {err}')
 finally:
 	cur.close()
 	connection.close()
 
-print(resultSQLList)
+for x in resultSQLList:
+	try:
+		PARAMS = {
+			'loginId': config.loginId,
+			'password': config.password,
+			'customerId': x[0],
+			}
+		requestResponce = core_functions.konnektivePurchaseQuery(PARAMS)[0]
+		result = requestResponce['result']
+		status = requestResponce['message']['data'][0]['status']
+		cancelReason = requestResponce['message']['data'][0]['cancelReason']
+
+		if result == 'SUCCESS':
+			if status == 'ACTIVE':
+				print(x[0], x[1], status, cancelReason)
+		elif result == 'ERROR':
+			print(requestResponce['message'])
+		else:
+			print(requestResponce)
+	except Exception as excpt:
+		print(f'Function error occurred: {excpt}')

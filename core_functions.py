@@ -113,43 +113,43 @@ def check_directory_existence(filePath):
 #  Functions for API konnective requests
 # API Documentation: https://api.konnektive.com/docs/transaction_update/
 
-loginId = config.loginId
-password = config.password
-orderId = ''
-purchaseId = ''
-customerId = '765725'
-txnType = ''
-paySource = ''
-responseType = ''
-merchantTxnId = ''
-clientTxnId = ''
-merchantId = ''
-cardLast4 = ''
-cardBin = ''
-achAccountNumber = ''
-achRoutingNumber = ''
-isChargedback = ''
-firstName = ''
-lastName = ''
-companyName = ''
-address1 = ''
-address2 = ''
-postalCode = ''
-city = ''
-state = ''
-country = ''
-emailAddress = ''
-phoneNumber = ''
-affId = ''
-showExternal = ''
-dateRangeType = ''
-startDate = ''
-endDate = ''
-startTime = ''
-endTime = ''
-sortDir = ''
-resultsPerPage = ''
-page = ''
+# loginId = config.loginId
+# password = config.password
+# orderId = ''
+# purchaseId = ''
+# customerId = '765725'
+# txnType = ''
+# paySource = ''
+# responseType = ''
+# merchantTxnId = ''
+# clientTxnId = ''
+# merchantId = ''
+# cardLast4 = ''
+# cardBin = ''
+# achAccountNumber = ''
+# achRoutingNumber = ''
+# isChargedback = ''
+# firstName = ''
+# lastName = ''
+# companyName = ''
+# address1 = ''
+# address2 = ''
+# postalCode = ''
+# city = ''
+# state = ''
+# country = ''
+# emailAddress = ''
+# phoneNumber = ''
+# affId = ''
+# showExternal = ''
+# dateRangeType = ''
+# startDate = ''
+# endDate = ''
+# startTime = ''
+# endTime = ''
+# sortDir = ''
+# resultsPerPage = ''
+# page = ''
 
 
 def responceStatusCodeValidation(responseUrl):
@@ -207,6 +207,32 @@ def konnektiveTransactionsQuery():
 		'page': page,
 		}
 	URL = konnektiveApiEndpoint + 'transactions/query/'
+
+	try:
+		responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
+		parseResponseUrlJSON = responseUrl.json()
+		parseResponseUrlString = json.dumps(parseResponseUrlJSON, indent=4)
+		parseResponseUrlDict = json.loads(responseUrl.text)
+		responseUrl.raise_for_status()
+	except HTTPError as http_err:
+		print(f'HTTP error occurred: {http_err}')
+		return f'HTTP error occurred: {http_err}'
+	except Exception as err:
+		print(f'Other error occurred: {err}')
+		return f'Other error occurred: {err}'
+	except Timeout as timeout_err:
+		print(f'Timeout error occurred: {timeout_err}')
+		return f'Timeout error occurred: {timeout_err}'
+	else:
+		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+
+def konnektivePurchaseQuery(PARAMS):
+	PARAMS = {
+		'loginId': PARAMS['loginId'],
+		'password': PARAMS['password'],
+		'customerId': PARAMS['customerId'],
+		}
+	URL = konnektiveApiEndpoint + 'purchase/query/'
 
 	try:
 		responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
