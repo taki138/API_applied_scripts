@@ -57,8 +57,6 @@ import core_functions
 #     sleep(30)
 
 
-
-
 conn_info = {
 	'host': config.vertica_DB_host,
 	'port': config.vertica_DB_port,
@@ -74,15 +72,16 @@ conn_info = {
 	# using server-side prepared statements is disabled by default
 	'use_prepared_statements': False,
 	# connection timeout is not enabled by default
-	'connection_timeout': 5
+	'connection_timeout': 50
 	}
-with vertica_python.connect(**conn_info) as connection:
+resultSQLList = []
+nextBillDate = '2019-08-14'
+with vertica_python.connect(**conn_info, paramstyle='qmark') as connection:
 	cur = connection.cursor()
-	SQLRequest = """SELECT * FROM konn.bill_info AS bi WHERE bi.konn_nextBillDate='2019-08-14' AND bi.konn_status='ACTIVE' AND bi.konn_merchant LIKE '%Check%';"""
-	cur.execute(SQLRequest)
+	SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin FROM konn.bill_info AS bi WHERE bi.konn_nextBillDate= :propA AND bi.konn_status='ACTIVE' AND bi.konn_merchant LIKE '%Check%';"""
+	# print(SQLRequest)
+	cur.execute(SQLRequest, {'propA': nextBillDate})
 	for row in cur.iterate():
-		print(row)
-	print(cur.fetchall())
-connection.close()
-
-
+		resultSQLList.append(row)
+	connection.close()
+print(resultSQLList)
