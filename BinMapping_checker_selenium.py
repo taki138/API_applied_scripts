@@ -78,7 +78,7 @@ conn_info = {
 	}
 with vertica_python.connect(**conn_info) as connection:
 	cur = connection.cursor()
-	SQLRequest = "SELECT * from vertica.checkout.transactions WHERE co_status='Refunded' LIMIT 10;"
+	SQLRequest = """SELECT * FROM konn.bill_info AS bi WHERE bi.konn_nextBillDate='2019-08-14' AND bi.konn_status='ACTIVE' AND bi.konn_merchant LIKE '%Check%';"""
 	cur.execute(SQLRequest)
 	for row in cur.iterate():
 		print(row)
