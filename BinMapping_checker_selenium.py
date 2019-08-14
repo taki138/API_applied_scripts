@@ -63,6 +63,7 @@ import core_functions
 #     sleep(30)
 
 
+start = timer()
 conn_info = {
 	'host': config.vertica_DB_host,
 	'port': config.vertica_DB_port,
@@ -83,7 +84,6 @@ conn_info = {
 
 resultSQLList = []
 nextBillDate = core_functions.tomorrow_date()
-start = timer()
 
 try:
 	with vertica_python.connect(**conn_info) as connection:
@@ -91,9 +91,8 @@ try:
 		SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin
 		FROM konn.bill_info AS bi
 		WHERE bi.konn_nextBillDate= :propA
-		AND bi.konn_status='ACTIVE'
+		AND (bi.konn_status='ACTIVE' OR bi.konn_status='TRIAL' OR bi.konn_status='RECYCLE_BILLING')
 		AND bi.konn_merchant LIKE '%Check%';"""
-		# print(SQLRequest)
 		cur.execute(SQLRequest, {'propA': nextBillDate})
 		for row in cur.iterate():
 			resultSQLList.append(row)
@@ -109,6 +108,7 @@ finally:
 	cur.close()
 	connection.close()
 
+resultFilteredList = []
 for x in resultSQLList:
 	try:
 		PARAMS = {
@@ -120,13 +120,17 @@ for x in resultSQLList:
 		result = requestResponce['result']
 		status = requestResponce['message']['data'][0]['status']
 		cancelReason = requestResponce['message']['data'][0]['cancelReason']
-
 		if result == 'SUCCESS':
-			if status == 'ACTIVE':
-				print(x[0], x[1], status, cancelReason)
+			if status == ('ACTIVE' or 'TRIAL' or 'RECYCLE_BILLING'):
+				row = x[0], x[1], status, cancelReason
+				print(row)
+				resultFilteredList.append(row)
 		elif result == 'ERROR':
 			print(requestResponce['message'])
 		else:
 			print(requestResponce)
 	except Exception as excpt:
 		print(f'Function error occurred: {excpt}')
+print(resultFilteredList)
+end = timer()
+print(start - end)
