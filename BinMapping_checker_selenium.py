@@ -72,13 +72,17 @@ conn_info = {
 	# using server-side prepared statements is disabled by default
 	'use_prepared_statements': False,
 	# connection timeout is not enabled by default
-	'connection_timeout': 50
+	'connection_timeout': 30
 	}
 resultSQLList = []
 nextBillDate = '2019-08-14'
 with vertica_python.connect(**conn_info, paramstyle='qmark') as connection:
 	cur = connection.cursor()
-	SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin FROM konn.bill_info AS bi WHERE bi.konn_nextBillDate= :propA AND bi.konn_status='ACTIVE' AND bi.konn_merchant LIKE '%Check%';"""
+	SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin
+	FROM konn.bill_info AS bi
+	WHERE bi.konn_nextBillDate= :propA
+	AND bi.konn_status='ACTIVE'
+	AND bi.konn_merchant LIKE '%Check%';"""
 	# print(SQLRequest)
 	cur.execute(SQLRequest, {'propA': nextBillDate})
 	for row in cur.iterate():
