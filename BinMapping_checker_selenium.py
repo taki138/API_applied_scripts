@@ -121,6 +121,16 @@ for x in resultSQLList:
 		status = requestResponce['message']['data'][0]['status']
 		cancelReason = requestResponce['message']['data'][0]['cancelReason']
 		if result == 'SUCCESS':
+			# RECYCLE_FAILED
+# ACTIVE
+# TRIAL
+# RECYCLE_BILLING
+# PENDING
+# CANCELLED
+# ""
+#
+# INACTIVE
+
 			if status == ('ACTIVE' or 'TRIAL' or 'RECYCLE_BILLING'):
 				row = x[0], x[1], status, cancelReason
 				print(row)
