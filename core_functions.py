@@ -1,3 +1,5 @@
+import datetime
+
 import vertica_python
 import requests
 import telebot
@@ -333,3 +335,11 @@ def login_Konnektive(browser, login, password):
 	else:
 		print(f'Function {this_function_name} fulfilled')
 	return browser
+
+
+
+
+def tomorrow_date():
+	tomorrowNonFormat = datetime.datetime.today() + datetime.timedelta(1)
+	tomorrowDate = datetime.datetime.strftime(tomorrowNonFormat, '%Y-%m-%d')
+	return tomorrowDate

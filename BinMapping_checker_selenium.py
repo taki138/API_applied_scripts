@@ -1,7 +1,7 @@
 from time import sleep
 
 import vertica_python
-
+import datetime
 import config
 import logging
 import csv
@@ -75,8 +75,10 @@ conn_info = {
 	'connection_timeout': 30
 	}
 resultSQLList = []
-nextBillDate = '2019-08-14'
-with vertica_python.connect(**conn_info, paramstyle='qmark') as connection:
+
+nextBillDate = core_functions.tomorrow_date()
+print(nextBillDate)
+with vertica_python.connect(**conn_info) as connection:
 	cur = connection.cursor()
 	SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin
 	FROM konn.bill_info AS bi
