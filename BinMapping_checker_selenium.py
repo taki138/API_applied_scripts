@@ -1,7 +1,13 @@
+import socket
+from timeit import default_timer as timer
 from time import sleep
+from timeit import default_timer as timer
 
 import vertica_python
 import datetime
+
+from vertica_python import errors
+
 import config
 import logging
 import csv
@@ -72,22 +78,33 @@ conn_info = {
 	# using server-side prepared statements is disabled by default
 	'use_prepared_statements': False,
 	# connection timeout is not enabled by default
-	'connection_timeout': 30
+	'connection_timeout': 3
 	}
 resultSQLList = []
-
 nextBillDate = core_functions.tomorrow_date()
-print(nextBillDate)
-with vertica_python.connect(**conn_info) as connection:
-	cur = connection.cursor()
-	SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin
-	FROM konn.bill_info AS bi
-	WHERE bi.konn_nextBillDate= :propA
-	AND bi.konn_status='ACTIVE'
-	AND bi.konn_merchant LIKE '%Check%';"""
-	# print(SQLRequest)
-	cur.execute(SQLRequest, {'propA': nextBillDate})
-	for row in cur.iterate():
-		resultSQLList.append(row)
+start = timer()
+try:
+	with vertica_python.connect(**conn_info) as connection:
+		cur = connection.cursor()
+		SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin
+		FROM konn.bill_info AS bi
+		WHERE bi.konn_nextBillDate= :propA
+		AND bi.konn_status='ACTIVE'
+		AND bi.konn_merchant LIKE '%Check%';"""
+		# print(SQLRequest)
+		cur.execute(SQLRequest, {'propA': nextBillDate})
+		for row in cur.iterate():
+			resultSQLList.append(row)
+		cur.close()
+		connection.close()
+except socket.error as socketerror:
+	print("Error: ", socketerror)
+except socket.timeout:
+	print("NO RESPONSE")
+except errors.ConnectionError as err:
+	print(f'error occurred: {err}')
+finally:
+	cur.close()
 	connection.close()
+
 print(resultSQLList)
