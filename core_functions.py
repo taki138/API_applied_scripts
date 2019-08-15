@@ -15,7 +15,6 @@ import config
 import logging
 import csv
 from time import sleep
-from gevent import timeout
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import Firefox, ActionChains
@@ -345,7 +344,6 @@ def browser_open(fp):
 		print(f'Function {this_function_name} fulfilled')
 		return browser
 
-browser_open(browser_init())
 def login_Konnektive(browser, login, password):
 	this_function_name = sys._getframe().f_code.co_name  # позволяет получить имя функции внутри самой функции
 	try:
