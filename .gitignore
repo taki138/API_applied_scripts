@@ -330,3 +330,21 @@ dmypy.json
 .pyre/
 
 .gitignore
+/venv/
+.idea/codeStyles/
+.idea/dataSources.xml
+.idea/encodings.xml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/sqldialects.xml
+.idea/untitled.iml
+.idea/vcs.xml
+Code review/
+Drafts/
+Fin/korta_fin.py
+Log.txt
+Logfile.txt
+selenium_scripts/chromedriver.exe
+selenium_scripts/geckodriver.exe
+token.pickle
