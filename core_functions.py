@@ -328,7 +328,7 @@ def browser_init():
 	return fp
 
 
-def browser_open(fp):
+def browser_open(fp: object) -> object:
 	this_function_name = sys._getframe().f_code.co_name
 	try:
 		opts = Options()
@@ -343,7 +343,7 @@ def browser_open(fp):
 		print(f'Function {this_function_name} fulfilled')
 		return browser
 
-def login_Konnektive(browser, login, password):
+def login_Konnektive(browser: object, login: str, password: str) -> object:
 	this_function_name = sys._getframe().f_code.co_name  # позволяет получить имя функции внутри самой функции
 	try:
 		WebDriverWait(browser, 60).until(EC.visibility_of_all_elements_located)
@@ -362,7 +362,7 @@ def login_Konnektive(browser, login, password):
 
 
 
-def tomorrow_date():
+def tomorrow_date() -> str:
 	tomorrowNonFormat = datetime.datetime.today() + datetime.timedelta(1)
 	tomorrowDate = datetime.datetime.strftime(tomorrowNonFormat, '%Y-%m-%d')
 	return tomorrowDate
