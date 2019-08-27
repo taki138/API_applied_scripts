@@ -1,6 +1,6 @@
 import datetime
 
-import vertica_python
+# import vertica_python
 import requests
 import telebot
 import config
@@ -24,7 +24,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-import psycopg2
+# import psycopg2
 
 csvFirstLineWriter = [
 	'costumerEmail', 'customerPhone', 'merchantId', 'purchaseId', 'cardBin',
@@ -89,7 +89,6 @@ def send_file_by_bot(outputFilePath, outputFilename):
 	bot = telebot.TeleBot(config.telegramBotToken)
 	doc = open(outputFilePath + outputFilename, 'rb')
 	send = bot.send_document(config.group_chat_id, doc, disable_notification=True)
-	objectMessage = send.date
 	print(f'Filename: {outputFilename} sended to Telegram')
 	return send
 
