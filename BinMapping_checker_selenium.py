@@ -1,7 +1,9 @@
+import os
 import socket
 from timeit import default_timer as timer
 from time import sleep
 from timeit import default_timer as timer
+from typing import List, Any
 
 import vertica_python
 import datetime
@@ -22,7 +24,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 import core_functions
-
+scriptName = os.path.basename(__file__)
+PARAMS = {
+	'loginId': config.loginId,
+	'password': config.password,
+	}
 
 start = timer()
 
@@ -107,8 +113,9 @@ def list_costumers_from_DB():
 	print(f'Function {this_function_name} fulfilled')
 	return resultFilteredList
 
-# resultFilteredCostumerList - получаем список кл., которые будут чарджиться завтра
-resultFilteredCostumerList = list_costumers_from_DB()
+
+# resultFilteredList - получаем список кл., которые будут чарджиться завтра
+resultFilteredList = list_costumers_from_DB()
 
 # fp инициализация браузера в Селениум c заданием параметров для firefox_profile
 fp = core_functions.browser_init()
@@ -121,23 +128,31 @@ core_functions.login_Konnektive(browser, config.seleniumUserName, config.seleniu
 brows_URL = f'{konnektiveAdminPannelURL}merchants/binmapping/'
 browser.get(brows_URL)
 core_functions.wait_until_element_visible(browser, By.CSS_SELECTOR, '#-row-1 > td:nth-child(1)')
-
 RowsCount = len(browser.find_elements_by_tag_name('tr'))
 
 # binList лист с БИНами в БИНмаппинге
-binList = []
+binList: List[str] = []
 for counter in range(RowsCount - 1):
 	CyclePathStartRange = f'#-row-{str(counter + 1)} > td:nth-child(3)'
 	StartRangeValue = browser.find_element_by_css_selector(CyclePathStartRange).text
 	binList.append(StartRangeValue)
-# print(binList)
 
-# print(len(resultFilteredCostumerList))
-print(resultFilteredCostumerList)
-for resultFilteredList in range(len(resultFilteredCostumerList) - 1):
-	cardBinListCross = StartRangeValue in binList
-if cardBinListCross:
-	pass
+# https://crm.konnektive.com/customer/cs/details/?customerId=1831426 для теста
+for i in range(len(resultFilteredList)):
+	if resultFilteredList[i][1] in binList:
+		print( f'\t customerId: {str(resultFilteredList[i][0])} Have Binmapping')
+	else:
+		PARAMS['customerId'] = resultFilteredList[i][1]
+		# core_functions.konnektiveImportOrder(PARAMS)[1]
+
+#############################################################
+
+
+
+
+
+
+
 
 end = timer()
-print(f'Script execution time: {end - start}')
+print(f'{scriptName} execution time: {end - start}')

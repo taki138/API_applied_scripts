@@ -163,46 +163,12 @@ session = requests.Session()
 konnektiveApiEndpoint = 'https://api.konnektive.com/'
 session.mount(konnektiveApiEndpoint, konnektive_adapter)
 
-
-def konnektiveTransactionsQuery():
+# list functions fo
+def konnektiveTransactionsQuery(PARAMS):
 	PARAMS = {
-		'loginId': loginId,
-		'password': password,
-		'orderId': orderId,
-		'purchaseId': purchaseId,
-		'customerId': customerId,
-		'txnType': txnType,
-		'paySource': paySource,
-		'responseType': responseType,
-		'merchantTxnId': merchantTxnId,
-		'clientTxnId': clientTxnId,
-		'merchantId': merchantId,
-		'cardLast4': cardLast4,
-		'cardBin': cardBin,
-		'achAccountNumber': achAccountNumber,
-		'achRoutingNumber': achRoutingNumber,
-		'isChargedback': isChargedback,
-		'firstName': firstName,
-		'lastName': lastName,
-		'companyName': companyName,
-		'address1': address1,
-		'address2': address2,
-		'postalCode': postalCode,
-		'city': city,
-		'state': state,
-		'country': country,
-		'emailAddress': emailAddress,
-		'phoneNumber': phoneNumber,
-		'affId': affId,
-		'showExternal': showExternal,
-		'dateRangeType': dateRangeType,
-		'startDate': startDate,
-		'endDate': endDate,
-		'startTime': startTime,
-		'endTime': endTime,
-		'sortDir': sortDir,
-		'resultsPerPage': resultsPerPage,
-		'page': page,
+		'loginId': PARAMS['loginId'],
+		'password': PARAMS['password'],
+		'customerId': PARAMS['customerId'],
 		}
 	URL = konnektiveApiEndpoint + 'transactions/query/'
 
@@ -249,6 +215,34 @@ def konnektivePurchaseQuery(PARAMS):
 		return f'Timeout error occurred: {timeout_err}'
 	else:
 		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+
+def konnektiveImportOrder(PARAMS):
+	PARAMS = {
+		'loginId': PARAMS['loginId'],
+		'password': PARAMS['password'],
+		'customerId': PARAMS['customerId'],
+		}
+	URL = konnektiveApiEndpoint + 'order/import/'
+
+	try:
+		responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
+		parseResponseUrlJSON = responseUrl.json()
+		parseResponseUrlString = json.dumps(parseResponseUrlJSON, indent=4)
+		parseResponseUrlDict = json.loads(responseUrl.text)
+		responseUrl.raise_for_status()
+	except HTTPError as http_err:
+		print(f'HTTP error occurred: {http_err}')
+		return f'HTTP error occurred: {http_err}'
+	except Exception as err:
+		print(f'Other error occurred: {err}')
+		return f'Other error occurred: {err}'
+	except Timeout as timeout_err:
+		print(f'Timeout error occurred: {timeout_err}')
+		return f'Timeout error occurred: {timeout_err}'
+	else:
+		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+
+
 
 
 # Selenium webbrowser scripts
