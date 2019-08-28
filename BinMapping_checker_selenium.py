@@ -25,12 +25,16 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 import core_functions
 scriptName = os.path.basename(__file__)
+print(f'{scriptName} started')
+start = timer()
 PARAMS = {
 	'loginId': config.loginId,
 	'password': config.password,
 	}
 
-start = timer()
+outputFilename = f'verification_charge_results_{datetime.date.today().strftime("%d.%m.%Y")}.csv'
+outputFilePath = f'{config.outputCoreFilePath}verification_charge_results\\'
+core_functions.check_directory_existence(outputFilePath)
 
 
 # TODO: в корфункшинс вынгести функцию проверки наличия БИНа в бинмаппинге
@@ -137,21 +141,21 @@ for counter in range(RowsCount - 1):
 	StartRangeValue = browser.find_element_by_css_selector(CyclePathStartRange).text
 	binList.append(StartRangeValue)
 
-# https://crm.konnektive.com/customer/cs/details/?customerId=1831426 для теста
+
 for i in range(len(resultFilteredList)):
 	if resultFilteredList[i][1] in binList:
-		print( f'\t customerId: {str(resultFilteredList[i][0])} Have Binmapping')
+		writedWalues = 'customerId', str(resultFilteredList[i][0]), 'Have Binmapping'
+		print(writedWalues)
 	else:
-		PARAMS['customerId'] = resultFilteredList[i][1]
-		# core_functions.konnektiveImportOrder(PARAMS)[1]
+		customerId = resultFilteredList[i][0]
+		PARAMS['customerId'] = customerId
+		result = core_functions.konnektiveTransactionsQuery(PARAMS)[1]
+		# result = core_functions.konnektiveImportOrder(PARAMS)[1]['result']
+		writedWalues = 'customerId', str(customerId), result['result']
+		print(writedWalues)
+	core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 
 #############################################################
-
-
-
-
-
-
 
 
 end = timer()
