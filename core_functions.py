@@ -247,6 +247,10 @@ def konnektiveImportOrder(PARAMS):
 		'loginId': PARAMS['loginId'],
 		'password': PARAMS['password'],
 		'customerId': PARAMS['customerId'],
+		'paySource': PARAMS['paySource'],
+		'campaignId': PARAMS['campaignId'],
+		'product1_qty': PARAMS['product1_qty'],
+		'product1_id': PARAMS['product1_id'],
 		}
 	URL = konnektiveApiEndpoint + 'order/import/'
 
