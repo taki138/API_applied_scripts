@@ -74,7 +74,7 @@ def list_costumers_from_DB():
 			FROM konn.bill_info AS bi
 			WHERE bi.konn_nextBillDate= :propA
 			AND (bi.konn_status='ACTIVE' OR bi.konn_status='TRIAL' OR bi.konn_status='RECYCLE_BILLING')
-			AND bi.konn_merchant LIKE '%Check%' LIMIT 20;"""
+			AND bi.konn_merchant LIKE '%Check%' LIMIT 100;"""
 			cur.execute(SQLRequest, {'propA': nextBillDate})
 			for row in cur.iterate():
 				resultSQLList.append(row)
@@ -104,7 +104,7 @@ def list_costumers_from_DB():
 			cancelReason = requestResponce['message']['data'][0]['cancelReason']
 			if result == 'SUCCESS':
 
-				if status == 'ACTIVE' or status == 'TRIAL':
+				if status == 'ACTIVE' or status == 'TRIAL' or status == 'RECYCLE_BILLING':
 					row = x[0], x[1], status, cancelReason
 					resultFilteredList.append(row)
 			elif result == 'ERROR':
@@ -145,25 +145,23 @@ for counter in range(RowsCount - 1):
 for i in range(len(resultFilteredList)):
 	if resultFilteredList[i][1] in binList:
 		writedWalues = 'customerId', str(resultFilteredList[i][0]), 'Have Binmapping'
-		print(writedWalues)
 	else:
 		customerId = resultFilteredList[i][0]
 		PARAMS['customerId'] = customerId
-		result = core_functions.konnektiveTransactionsQuery(PARAMS)[1]
-		# result = core_functions.konnektiveImportOrder(PARAMS)[1]['result']
+		result = core_functions.konnektiveImportOrder(PARAMS)[1]['result']
 		writedWalues = 'customerId', str(customerId), result['result']
 		print(writedWalues)
-	core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
+		core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 
-# core_functions.send_file_by_bot(outputFilePath, outputFilename)
+core_functions.send_file_by_bot(outputFilePath, outputFilename)
 
 #############################################################
-for i in range(len(resultFilteredList)):
-	customerId = resultFilteredList[i][0]
-	PARAMS['customerId'] = customerId
-	merchant = core_functions.konnektiveTransactionsQuery(PARAMS)[1]['message']['data'][0]['merchant']
-	if "Checkout" not in merchant:
-		pass
+# for i in range(len(resultFilteredList)):
+# 	customerId = resultFilteredList[i][0]
+# 	PARAMS['customerId'] = customerId
+# 	merchant = core_functions.konnektiveTransactionsQuery(PARAMS)[1]['message']['data'][0]['merchant']
+# 	if "Checkout" not in merchant:
+# 		pass
 	# TODO: функцию авторефанда при выполнении условия
 
 

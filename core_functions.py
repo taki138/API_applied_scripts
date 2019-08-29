@@ -190,6 +190,32 @@ def konnektiveTransactionsQuery(PARAMS):
 	else:
 		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
 
+def konnektiveTransactionsRefund(PARAMS):
+	PARAMS = {
+		'loginId': PARAMS['loginId'],
+		'password': PARAMS['password'],
+		'customerId': PARAMS['customerId'],
+		}
+	URL = konnektiveApiEndpoint + 'transactions/refund/'
+
+	try:
+		responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
+		parseResponseUrlJSON = responseUrl.json()
+		parseResponseUrlString = json.dumps(parseResponseUrlJSON, indent=4)
+		parseResponseUrlDict = json.loads(responseUrl.text)
+		responseUrl.raise_for_status()
+	except HTTPError as http_err:
+		print(f'HTTP error occurred: {http_err}')
+		return f'HTTP error occurred: {http_err}'
+	except Exception as err:
+		print(f'Other error occurred: {err}')
+		return f'Other error occurred: {err}'
+	except Timeout as timeout_err:
+		print(f'Timeout error occurred: {timeout_err}')
+		return f'Timeout error occurred: {timeout_err}'
+	else:
+		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+
 def konnektivePurchaseQuery(PARAMS):
 	PARAMS = {
 		'loginId': PARAMS['loginId'],
