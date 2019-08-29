@@ -70,11 +70,11 @@ def list_costumers_from_DB():
 	try:
 		with vertica_python.connect(**conn_info) as connection:
 			cur = connection.cursor()
-			SQLRequest = """SELECT bi.konn_customerId, bi.konn_cardBin, bi.konn_cardType
+			SQLRequest = """SELECT distinct(bi.konn_customerId), bi.konn_cardBin, bi.konn_cardType
 			FROM konn.bill_info AS bi
 			WHERE bi.konn_nextBillDate= :propA
 			AND (bi.konn_status='ACTIVE' OR bi.konn_status='TRIAL' OR bi.konn_status='RECYCLE_BILLING')
-			AND bi.konn_merchant LIKE '%Check%' LIMIT 5;"""
+			AND bi.konn_merchant LIKE '%Check%' AND bi.konn_customerId NOT IN ('1618333', '1680061', '1638349', '1604194', '1833585', '1833481') LIMIT 10;"""
 			cur.execute(SQLRequest, {'propA': nextBillDate})
 			for row in cur.iterate():
 				resultSQLList.append(row)
@@ -105,7 +105,7 @@ def list_costumers_from_DB():
 			if result == 'SUCCESS':
 
 				if status == 'ACTIVE' or status == 'TRIAL' or status == 'RECYCLE_BILLING':
-					row = x[0], x[1], status, cancelReason, x[1]
+					row = x[0], x[1], status, cancelReason, x[2]
 					resultFilteredList.append(row)
 			elif result == 'ERROR':
 				print(requestResponce['message'])
@@ -119,11 +119,7 @@ def list_costumers_from_DB():
 
 # resultFilteredList - получаем список кл., которые будут чарджиться завтра
 resultFilteredList = list_costumers_from_DB()
-
-
-
 print(resultFilteredList)
-
 # fp инициализация браузера в Селениум c заданием параметров для firefox_profile
 fp = core_functions.browser_init()
 
@@ -150,21 +146,25 @@ PARAMS['product1_qty'] = '1'
 for i in range(len(resultFilteredList)):
 	if resultFilteredList[i][1] in binList:
 		writedWalues = 'customerId', str(resultFilteredList[i][0]), 'Have Binmapping'
+		core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 	else:
 		customerId = resultFilteredList[i][0]
 		PARAMS['customerId'] = customerId
+
+		if resultFilteredList[i][4] == 'MASTERCARD':
+			PARAMS['product1_id'] = '1209'
+		else:
+			PARAMS['product1_id'] = '1210'
+
 		result = core_functions.konnektiveImportOrder(PARAMS)
 		if result[1]['result'] == 'SUCCESS':
 			writedWalues = 'customerId', str(customerId), 'SUCCESS'
-			print(writedWalues)
 			core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 		elif result[1]['result'] == 'ERROR':
 			writedWalues = 'customerId', str(customerId), 'ERROR', result[1]['message']
-			print(writedWalues)
 			core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 		else:
 			writedWalues = 'customerId', str(customerId), result
-			print(writedWalues)
 			core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 
 

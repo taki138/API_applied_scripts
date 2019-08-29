@@ -258,7 +258,7 @@ def konnektiveImportOrder(PARAMS):
 		responseUrl = session.post(URL, PARAMS, timeout=(10, 10))
 		parseResponseUrlJSON = responseUrl.json()
 		parseResponseUrlString = json.dumps(parseResponseUrlJSON, indent=4)
-		parseResponseUrlDict = json.loads(responseUrl.text)
+		# parseResponseUrlDict = json.loads(responseUrl.text)
 		responseUrl.raise_for_status()
 	except HTTPError as http_err:
 		print(f'HTTP error occurred: {http_err}')
@@ -270,7 +270,7 @@ def konnektiveImportOrder(PARAMS):
 		print(f'Timeout error occurred: {timeout_err}')
 		return f'Timeout error occurred: {timeout_err}'
 	else:
-		return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+		return parseResponseUrlJSON, parseResponseUrlString
 
 
 
