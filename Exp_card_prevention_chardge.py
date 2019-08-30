@@ -1,11 +1,14 @@
 import datetime
 import socket
 import sys
+
+import requests
 import vertica_python
 from vertica_python import errors
 import config
 from core_functions import check_directory_existence
 from core_functions import csv_first_line_writer
+from core_functions import konnektivePurchaseQuery
 from core_functions import csv_result_writer
 
 outputFilename = f'expired_cards_move_billing_date_{datetime.date.today().strftime("%d.%m.%Y")}.csv'
@@ -13,9 +16,8 @@ outputFilePath = f'{config.outputCoreFilePath}expired_cards_move_billing\\'
 check_directory_existence(outputFilePath)
 csvFirstLineWriter = 'costumerEmail', 'customerPhone', 'merchantId', 'purchaseId', 'cardBin', \
                      'resultApiCall1', 'messageApiCall1', 'customerId'
-resultWritedWalues = costumerEmail, customerPhone, merchantId, purchaseId, cardBin, resultApiCall1, messageApiCall1,
-customerId
 
+billNow = 0  # 0 - не форсится, 1 - форсится
 SQLRequest = """
 SELECT distinct(bi.konn_customerId), bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
 FROM konn.bill_info AS bi
@@ -23,7 +25,7 @@ Where bi.konn_expDate > '2019-09-01 00:00:00.000000'
   AND bi.konn_expDate < '2019-10-01 00:00:00.000000'
   AND (bi.konn_status = 'ACTIVE' OR bi.konn_status = 'TRIAL' OR bi.konn_status = 'RECYCLE_BILLING')
 group by bi.konn_customerId, bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
-;
+limit 5;
 """
 
 
@@ -68,7 +70,35 @@ def SQL_SELECT_from_vertica(SQLRequest):
 	return resultSQLList
 
 
+def purchaseStatusChecker(inputPurchaseIdList: list) -> list:
+	this_function_name = sys._getframe().f_code.co_name
+	resultFilteredList = []
+	for x in inputPurchaseIdList:
+		try:
+			PARAMS = {
+				'loginId': config.loginId,
+				'password': config.password,
+				'customerId': x[0],
+				}
+			requestResponce = konnektivePurchaseQuery(PARAMS)[0]
+			result = requestResponce['result']
+			if result == 'SUCCESS':
+				status = requestResponce['message']['data'][0]['status']
+				if status == 'ACTIVE' or status == 'TRIAL' or status == 'RECYCLE_BILLING':
+					row = x[0], x[1], x[2], x[3], x[4], x[5]
+					resultFilteredList.append(row)
+			elif result == 'ERROR':
+				print(requestResponce['message'])
+			else:
+				print(requestResponce)
+		except Exception as excpt:
+			print(f'Function {this_function_name} error occurred: {excpt}')
+	print(f'Function {this_function_name} fulfilled')
+	return resultFilteredList
+
 resultSQLList = SQL_SELECT_from_vertica(SQLRequest)
+resultSQLList = purchaseStatusChecker(resultSQLList)
+
 csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
 for i in range(len(resultSQLList)):
     customerId = resultSQLList[i][0]
@@ -78,17 +108,21 @@ for i in range(len(resultSQLList)):
     purchaseId = resultSQLList[i][4]
     cardBin = resultSQLList[i][5]
 
-    url = 'https://api.konnektive.com/purchase/update/?' \
-          'loginId=' + \
-          loginId + \
-          '&password=' + \
-          password + \
-          '&purchaseId=' + \
-          purchaseId + \
-          '&billNow=' + \
-          billNow
-    responseUrl = requests.post(url)
-    parseResponseUrl = responseUrl.json()
-    resultApiCall1 = parseResponseUrl['result']
-    messageApiCall1 = parseResponseUrl['message']
-	csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
+    resultWritedWalues = costumerEmail, customerPhone, merchantId, purchaseId, cardBin, resultApiCall1, messageApiCall1,
+    customerId
+    print(resultWritedWalues)
+
+    # url = 'https://api.konnektive.com/purchase/update/?' \
+    #       'loginId=' + \
+    #       config.loginId + \
+    #       '&password=' + \
+    #       config.password + \
+    #       '&purchaseId=' + \
+    #       purchaseId + \
+    #       '&billNow=' + \
+    #       billNow
+    # responseUrl = requests.post(url)
+    # parseResponseUrl = responseUrl.json()
+    # resultApiCall1 = parseResponseUrl['result']
+    # messageApiCall1 = parseResponseUrl['message']
+csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
