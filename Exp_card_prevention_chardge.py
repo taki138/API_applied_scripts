@@ -36,6 +36,7 @@ group by bi.konn_customerId, bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_
 
 def SQL_SELECT_from_vertica(SQLRequest):
 	this_function_name = sys._getframe().f_code.co_name
+	print(f"{this_function_name} started")
 	conn_info = {
 		'host': config.vertica_DB_host,
 		'port': config.vertica_DB_port,
@@ -72,11 +73,13 @@ def SQL_SELECT_from_vertica(SQLRequest):
 		print(f'{this_function_name}: Error occurred: {err}')
 	finally:
 		connection.close()
+	print(f"{this_function_name} fullfilled")
 	return resultSQLList
 
 
 def purchaseStatusChecker(inputPurchaseIdList: list) -> list:
 	this_function_name = sys._getframe().f_code.co_name
+	print(f"{this_function_name} started")
 	resultFilteredList = []
 	for x in inputPurchaseIdList:
 		try:
@@ -92,6 +95,7 @@ def purchaseStatusChecker(inputPurchaseIdList: list) -> list:
 				if status == 'ACTIVE' or status == 'TRIAL' or status == 'RECYCLE_BILLING':
 					row = x[0], x[1], x[2], x[3], x[4], x[5], status
 					resultFilteredList.append(row)
+					print(row)
 			elif result == 'ERROR':
 				print(requestResponce['message'])
 			else:
@@ -107,6 +111,7 @@ resultSQLList = purchaseStatusChecker(resultSQLList)
 
 csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
 for i in range(len(resultSQLList)):
+	print('\t requests started')
 	customerId = resultSQLList[i][0]
 	costumerEmail = resultSQLList[i][1]
 	customerPhone = resultSQLList[i][2]
