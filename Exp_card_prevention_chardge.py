@@ -1,7 +1,8 @@
 import datetime
+import os
 import socket
 import sys
-
+from timeit import default_timer as timer
 import requests
 import vertica_python
 from vertica_python import errors
@@ -10,6 +11,10 @@ from core_functions import check_directory_existence
 from core_functions import csv_first_line_writer
 from core_functions import konnektivePurchaseQuery
 from core_functions import csv_result_writer
+
+scriptName = os.path.basename(__file__)
+print(f'{scriptName} started')
+start = timer()
 
 outputFilename = f'expired_cards_move_billing_date_{datetime.date.today().strftime("%d.%m.%Y")}.csv'
 outputFilePath = f'{config.outputCoreFilePath}expired_cards_move_billing\\'
@@ -25,7 +30,7 @@ Where bi.konn_expDate > '2019-09-01 00:00:00.000000'
   AND bi.konn_expDate < '2019-10-01 00:00:00.000000'
   AND (bi.konn_status = 'ACTIVE' OR bi.konn_status = 'TRIAL' OR bi.konn_status = 'RECYCLE_BILLING')
 group by bi.konn_customerId, bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
-limit 5;
+;
 """
 
 
@@ -85,7 +90,7 @@ def purchaseStatusChecker(inputPurchaseIdList: list) -> list:
 			if result == 'SUCCESS':
 				status = requestResponce['message']['data'][0]['status']
 				if status == 'ACTIVE' or status == 'TRIAL' or status == 'RECYCLE_BILLING':
-					row = x[0], x[1], x[2], x[3], x[4], x[5]
+					row = x[0], x[1], x[2], x[3], x[4], x[5], status
 					resultFilteredList.append(row)
 			elif result == 'ERROR':
 				print(requestResponce['message'])
@@ -96,33 +101,70 @@ def purchaseStatusChecker(inputPurchaseIdList: list) -> list:
 	print(f'Function {this_function_name} fulfilled')
 	return resultFilteredList
 
+
 resultSQLList = SQL_SELECT_from_vertica(SQLRequest)
 resultSQLList = purchaseStatusChecker(resultSQLList)
 
 csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
 for i in range(len(resultSQLList)):
-    customerId = resultSQLList[i][0]
-    costumerEmail = resultSQLList[i][1]
-    customerPhone = resultSQLList[i][2]
-    merchantId = resultSQLList[i][3]
-    purchaseId = resultSQLList[i][4]
-    cardBin = resultSQLList[i][5]
+	customerId = resultSQLList[i][0]
+	costumerEmail = resultSQLList[i][1]
+	customerPhone = resultSQLList[i][2]
+	merchantId = resultSQLList[i][3]
+	purchaseId = resultSQLList[i][4]
+	cardBin = resultSQLList[i][5]
+	purchaseStatus = resultSQLList[i][6]
 
-    resultWritedWalues = costumerEmail, customerPhone, merchantId, purchaseId, cardBin, resultApiCall1, messageApiCall1,
-    customerId
-    print(resultWritedWalues)
+	if purchaseStatus == 'ACTIVE':
+		urlUpdatePurchase1 = 'https://api.konnektive.com/purchase/update/?' \
+		                     'loginId=' + \
+		                     config.loginId + \
+		                     '&password=' + \
+		                     config.password + \
+		                     '&purchaseId=' + \
+		                     purchaseId + \
+		                     '&billNow=0' + \
+		                     '&nextBillDate=08/31/2019'
+		r = requests.post(urlUpdatePurchase1)
+		responseUpdatePurchase = requests.post(urlUpdatePurchase1)
+		parseResponseUpdatePurchase = responseUpdatePurchase.json()
+		resultApiCall1 = parseResponseUpdatePurchase['result']
+		messageApiCall1 = parseResponseUpdatePurchase['message']
+		resultWritedWalues = costumerEmail, customerPhone, merchantId, purchaseId, cardBin, \
+		                     resultApiCall1, messageApiCall1, customerId
+		csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
+	else:
+		urlUpdatePurchase2 = 'https://api.konnektive.com/purchase/update/?' \
+		                     'loginId=' + \
+		                     config.loginId + \
+		                     '&password=' + \
+		                     config.password + \
+		                     '&purchaseId=' + \
+		                     purchaseId + \
+		                     '&reactivate=1'
+		r = requests.post(urlUpdatePurchase2)
+		responseUpdatePurchase2 = requests.post(urlUpdatePurchase2)
+		parseResponseUpdatePurchase2 = responseUpdatePurchase2.json()
+		resultApiCall2 = parseResponseUpdatePurchase2['result']
+		messageApiCall2 = parseResponseUpdatePurchase2['message']
 
-    # url = 'https://api.konnektive.com/purchase/update/?' \
-    #       'loginId=' + \
-    #       config.loginId + \
-    #       '&password=' + \
-    #       config.password + \
-    #       '&purchaseId=' + \
-    #       purchaseId + \
-    #       '&billNow=' + \
-    #       billNow
-    # responseUrl = requests.post(url)
-    # parseResponseUrl = responseUrl.json()
-    # resultApiCall1 = parseResponseUrl['result']
-    # messageApiCall1 = parseResponseUrl['message']
-csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
+		urlUpdatePurchase1 = 'https://api.konnektive.com/purchase/update/?' \
+		                     'loginId=' + \
+		                     config.loginId + \
+		                     '&password=' + \
+		                     config.password + \
+		                     '&purchaseId=' + \
+		                     purchaseId + \
+		                     '&nextBillDate=08/31/2019'
+
+		r = requests.post(urlUpdatePurchase1)
+		responseUpdatePurchase1 = requests.post(urlUpdatePurchase1)
+		parseResponseUpdatePurchase1 = responseUpdatePurchase1.json()
+		resultApiCall1 = parseResponseUpdatePurchase1['result']
+		messageApiCall1 = parseResponseUpdatePurchase1['message']
+		resultWritedWalues = costumerEmail, customerPhone, merchantId, purchaseId, cardBin, \
+		                     resultApiCall1, messageApiCall1, customerId
+		csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
+
+end = timer()
+print(f'{scriptName} execution time: {end - start}')
