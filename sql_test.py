@@ -4,6 +4,7 @@ import f
 import vertica_python
 
 import config
+from core_functions import konnektivePurchaseQuery
 
 SQLRequest = """
 SELECT distinct(bi.konn_customerId), bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
@@ -29,9 +30,9 @@ conn_info = {
 
 
 @f.pcall_wraps
-def vertica_DB_connector_safe(conn_info):
+def SQL_SELECT_from_vertica(SQLRequest, conn_info):
 	this_function_name = sys._getframe().f_code.co_name
-	# try:
+	print(f"{this_function_name} started")
 	conn_info = {
 		'host': conn_info['host'],
 		'port': conn_info['port'],
@@ -49,11 +50,28 @@ def vertica_DB_connector_safe(conn_info):
 		# connection timeout is not enabled by default
 		'connection_timeout': conn_info['connection_timeout']
 		}
+
+	resultSQLList = []
+
 	with vertica_python.connect(**conn_info) as connection:
 		cur = connection.cursor()
-	# except Exception as err:
-	# 	print(f'Function {this_function_name} error occurred: {err}')
-	return cur
+		cur.execute(SQLRequest)
+		for row in cur.iterate():
+			resultSQLList.append(row)
+		cur.close()
+		connection.close()
+	connection.close()
+	print(f"{this_function_name} fullfilled")
+	return resultSQLList
+
+def SQL_SELECT_from_vertica(SQLRequest, conn_info):
+	resultSQLList = SQL_SELECT_from_vertica(SQLRequest, conn_info)
+	def resultSQLListIterator(resultSQLList):
+		return resultSQLList
+	print(resultSQLListIterator(resultSQLList))
+
+SQL_SELECT_from_vertica(SQLRequest, conn_info)
 
 
-print(vertica_DB_connector_safe(conn_info) )
+
+
