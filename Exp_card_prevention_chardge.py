@@ -70,12 +70,25 @@ def SQL_SELECT_from_vertica(SQLRequest):
 
 resultSQLList = SQL_SELECT_from_vertica(SQLRequest)
 csv_first_line_writer(outputFilePath, outputFilename, csvFirstLineWriter)
+for i in range(len(resultSQLList)):
+    customerId = resultSQLList[i][0]
+    costumerEmail = resultSQLList[i][1]
+    customerPhone = resultSQLList[i][2]
+    merchantId = resultSQLList[i][3]
+    purchaseId = resultSQLList[i][4]
+    cardBin = resultSQLList[i][5]
 
-
-
-
-
-
-
-
-csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
+    url = 'https://api.konnektive.com/purchase/update/?' \
+          'loginId=' + \
+          loginId + \
+          '&password=' + \
+          password + \
+          '&purchaseId=' + \
+          purchaseId + \
+          '&billNow=' + \
+          billNow
+    responseUrl = requests.post(url)
+    parseResponseUrl = responseUrl.json()
+    resultApiCall1 = parseResponseUrl['result']
+    messageApiCall1 = parseResponseUrl['message']
+	csv_result_writer(outputFilename, outputFilePath, resultWritedWalues)
