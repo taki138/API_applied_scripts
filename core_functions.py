@@ -1,3 +1,4 @@
+from dateutil import relativedelta
 import datetime
 
 # import vertica_python
@@ -390,3 +391,9 @@ def tomorrow_date() -> str:
 	tomorrowNonFormat = datetime.datetime.today() + datetime.timedelta(1)
 	tomorrowDate = datetime.datetime.strftime(tomorrowNonFormat, '%Y-%m-%d')
 	return tomorrowDate
+
+
+def next_month():
+	nextmonth = datetime.date.today() + relativedelta.relativedelta(months=1)
+	nextMonth = datetime.datetime.strftime(nextmonth, '%Y-%m-%d %X' + '.000000')
+	return nextMonth
