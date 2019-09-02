@@ -12,6 +12,8 @@ from vertica_python import errors
 import config
 from core_functions import check_directory_existence
 from core_functions import next_mont_first_date
+from core_functions import date_time_convert_verticaDB_format
+from core_functions import next_mont_2_first_date
 from core_functions import next_month
 from core_functions import csv_first_line_writer
 from core_functions import konnektivePurchaseQuery
@@ -31,6 +33,9 @@ csvFirstLineWriter = 'costumerEmail', 'customerPhone', 'merchantId', 'purchaseId
                      'resultApiCall1', 'messageApiCall1', 'customerId'
 
 billNow = 0  # 0 - не форсится, 1 - форсится
+
+next_mont_first_date = date_time_convert_verticaDB_format(next_mont_first_date())[1]
+next_mont_2_first_date = date_time_convert_verticaDB_format(next_mont_2_first_date())[1]
 SQLRequest = """
 SELECT distinct(bi.konn_customerId), bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
 FROM konn.bill_info AS bi
@@ -39,17 +44,11 @@ Where bi.konn_expDate > {}
   AND (bi.konn_status = 'ACTIVE' OR bi.konn_status = 'TRIAL' OR bi.konn_status = 'RECYCLE_BILLING')
 group by bi.konn_customerId, bi.konn_emailAddress, bi.konn_phoneNumber, bi.konn_merchantId, bi.konn_purchaseId, bi.konn_cardBin
 ;
-""".format('2019-09-01 00:00:00.000000', '2019-10-01 00:00:00.000000')
+""".format(next_mont_first_date, next_mont_2_first_date)
 
 
-# @pcall_wraps
-# def next_mont_first_date() -> tuple:
-# 	today = date.today()
-# 	d = today + relativedelta(months=1)
-# 	firstDate = date(d.year, d.month, 1)
-# 	return firstDate
 
-print(next_mont_first_date()[1])
+
 
 # print(SQLRequest)
 

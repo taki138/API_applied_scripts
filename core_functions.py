@@ -411,10 +411,21 @@ def next_month():
 	nextMonth = datetime.datetime.strftime(nextmonth, '%Y-%m-%d %X' + '.000000')
 	return nextMonth
 
+
 @pcall_wraps
-def next_mont_first_date() -> tuple:
+def date_time_convert_verticaDB_format(rawDate):
+	convertedDateTime = datetime.datetime.strftime(rawDate, '%Y-%m-%d %X' + '.000000')
+	return convertedDateTime
+
+
+def next_mont_first_date():
 	today = date.today()
 	d = today + relativedelta(months=1)
 	firstDate = date(d.year, d.month, 1)
 	return firstDate
 
+def next_mont_2_first_date():
+	today = date.today()
+	d = today + relativedelta(months=2)
+	firstDate = date(d.year, d.month, 1)
+	return firstDate
