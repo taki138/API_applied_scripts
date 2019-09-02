@@ -168,7 +168,7 @@ for i in range(len(resultFilteredList)):
 			core_functions.csv_result_writer(outputFilename, outputFilePath, writedWalues)
 
 
-# core_functions.send_file_by_bot(outputFilePath, outputFilename)
+core_functions.send_file_by_bot(outputFilePath, outputFilename)
 
 #############################################################
 # for i in range(len(resultFilteredList)):

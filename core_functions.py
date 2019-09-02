@@ -1,7 +1,9 @@
 import vertica_python
 from dateutil import relativedelta
 import datetime
-
+from datetime import date
+from dateutil.relativedelta import relativedelta
+from f import pcall_wraps
 # import vertica_python
 import requests
 import telebot
@@ -408,3 +410,11 @@ def next_month():
 	nextmonth = datetime.date.today() + relativedelta.relativedelta(months=1)
 	nextMonth = datetime.datetime.strftime(nextmonth, '%Y-%m-%d %X' + '.000000')
 	return nextMonth
+
+@pcall_wraps
+def next_mont_first_date() -> tuple:
+	today = date.today()
+	d = today + relativedelta(months=1)
+	firstDate = date(d.year, d.month, 1)
+	return firstDate
+
