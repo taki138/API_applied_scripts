@@ -348,3 +348,4 @@ Logfile.txt
 selenium_scripts/chromedriver.exe
 selenium_scripts/geckodriver.exe
 token.pickle
+!/Verif_charge.py
