@@ -117,6 +117,7 @@ def konnektiveTransactionsQuery():
         return f'Timeout error occurred: {timeout_err}'
     else:
         return parseResponseUrlDict, parseResponseUrlJSON, parseResponseUrlString
+    # обращение к  элементу konnektiveTransactionsQuery()[0] = parseResponseUrlDict
     # print(konnektiveTransactionsQuery()[0]['message']['data'][1])
 
 

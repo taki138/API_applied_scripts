@@ -429,3 +429,46 @@ def next_mont_2_first_date():
 	d = today + relativedelta(months=2)
 	firstDate = date(d.year, d.month, 1)
 	return firstDate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def dic_vlues_to_string(dict: dict) -> str:
+	tempList = []
+	for elm in dict.values():
+		tempList.append(str(elm))
+	strValues: str = ','.join(tempList)
+
+	return strValues
