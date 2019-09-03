@@ -472,3 +472,11 @@ def dic_vlues_to_string(dict: dict) -> str:
 	strValues: str = ','.join(tempList)
 
 	return strValues
+
+def dic_keys_to_string(dict: dict) -> str:
+    tempList = []
+    for elm in dict:
+        tempList.append(str(elm))
+    strValues=','.join(tempList)
+
+    return strValues
